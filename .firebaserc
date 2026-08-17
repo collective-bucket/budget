@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "collective-bucket"
+  },
+  "targets": {
+    "collective-bucket": {
+      "hosting": {
+        "budget": [
+          "cbucket-budget"
+        ]
+      }
+    }
+  }
+}

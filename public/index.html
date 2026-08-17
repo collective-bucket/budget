@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bütçe | Collective Bucket</title>
+  <meta name="description" content="Gelir, harcama ve birikim hedeflerini takip et." />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <img src="/assets/logo.svg" alt="" />
+        <span>Bütçe</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-cta">
+        <nav class="nav-links" hidden>
+          <a href="/" class="is-active">Anasayfa</a>
+          <a href="/incomes">Gelirler</a>
+          <a href="/goals">Hedefler</a>
+        </nav>
+        <div class="cb-auth-controls" data-cb-auth></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <h1>Bütçe</h1>
+          <p>Geliri not et, harcamayı takip et, birikim hedefine ilerle.</p>
+        </div>
+        <div class="hero-toolbar" id="home-actions" hidden>
+          <a class="btn btn-ghost" href="/incomes">Gelirler</a>
+          <a class="btn btn-ghost" href="/goals">Hedefler</a>
+          <button id="add-expense" class="btn btn-primary" type="button">Harcama ekle</button>
+        </div>
+      </section>
+
+      <div id="login-prompt" class="login-action" hidden>
+        <a id="login-link" class="btn btn-primary" href="#">Giriş yap</a>
+      </div>
+
+      <div id="app-content" hidden>
+        <section class="panel">
+          <div class="panel-head">
+            <h2 id="month-heading">Bu ay</h2>
+            <a id="month-link" href="/month">Ay detayı</a>
+          </div>
+          <div class="stats">
+            <div class="stat"><span>Harcama</span><strong id="stat-expense">0 ₺</strong></div>
+            <div class="stat"><span>Kalan</span><strong id="stat-remaining">0 ₺</strong></div>
+            <div class="stat"><span>Günlük limit</span><strong id="stat-daily">0 ₺</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Hedefler</h2>
+          <div id="goal-list" class="goal-grid"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Geçmiş aylar</h2>
+          <div id="past-months" class="month-grid"></div>
+        </section>
+      </div>
+
+      <p id="page-message" class="message" role="status"></p>
+    </div>
+  </main>
+
+  <dialog id="expense-dialog" class="modal">
+    <form id="expense-form" class="modal-form" method="dialog">
+      <div class="modal-header">
+        <h2>Harcama ekle</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-close-dialog aria-label="Kapat" title="Kapat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <label for="expense-name">Ad</label>
+        <input id="expense-name" type="text" maxlength="80" required placeholder="Market" />
+        <label for="expense-amount">Tutar (₺)</label>
+        <input id="expense-amount" type="number" min="0.01" step="0.01" required />
+        <label for="expense-goal">Hedefe katkı (opsiyonel)</label>
+        <select id="expense-goal">
+          <option value="">Yok</option>
+        </select>
+        <p id="expense-message" class="message" role="status"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Vazgeç</button>
+        <button class="btn btn-primary" type="submit">Ekle</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer>
+    <div class="wrap">
+      <span>Bütçe</span>
+      <a href="https://collectivebucket.com">collectivebucket.com</a>
+    </div>
+  </footer>
+
+  <script src="https://auth.collectivebucket.com/client.js" defer></script>
+  <script src="/assets/config.js" defer></script>
+  <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/budget.js" defer></script>
+  <script src="/assets/ui.js" defer></script>
+  <script src="/assets/nav.js" defer></script>
+  <script src="/assets/home.js" defer></script>
+</body>
+</html>

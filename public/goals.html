@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hedefler | Bütçe</title>
+  <meta name="description" content="Birikim hedeflerini yönet." />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <img src="/assets/logo.svg" alt="" />
+        <span>Bütçe</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-cta">
+        <nav class="nav-links">
+          <a href="/">Anasayfa</a>
+          <a href="/incomes">Gelirler</a>
+          <a href="/goals" class="is-active">Hedefler</a>
+        </nav>
+        <div class="cb-auth-controls" data-cb-auth></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <h1>Hedefler</h1>
+          <p>Birikim hedeflerini ekle, sabitle ve katkıları gör.</p>
+        </div>
+        <div class="hero-toolbar" id="page-actions" hidden>
+          <button id="add-item" class="btn btn-primary" type="button">Hedef ekle</button>
+        </div>
+      </section>
+
+      <div id="login-prompt" class="login-action" hidden>
+        <a id="login-link" class="btn btn-primary" href="#">Giriş yap</a>
+      </div>
+
+      <div id="app-content" hidden>
+        <section class="panel">
+          <ul id="item-list" class="list"></ul>
+        </section>
+      </div>
+
+      <p id="page-message" class="message" role="status"></p>
+    </div>
+  </main>
+
+  <dialog id="item-dialog" class="modal">
+    <form id="item-form" class="modal-form" method="dialog">
+      <div class="modal-header">
+        <h2 id="item-dialog-title">Hedef ekle</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-close-dialog aria-label="Kapat" title="Kapat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <label for="item-name">Ad</label>
+        <input id="item-name" type="text" maxlength="80" required placeholder="Tayland Tatili" />
+        <label for="item-amount">Hedef tutar (₺)</label>
+        <input id="item-amount" type="number" min="0.01" step="0.01" required />
+        <label class="check-row">
+          <input id="item-pinned" type="checkbox" />
+          <span>Anasayfada göster</span>
+        </label>
+        <div id="item-contributions"></div>
+        <p id="item-message" class="message" role="status"></p>
+      </div>
+      <div class="modal-actions">
+        <button id="item-delete" class="btn btn-ghost danger" type="button" hidden>Sil</button>
+        <button class="btn btn-ghost" type="button" data-close-dialog>Vazgeç</button>
+        <button id="item-submit" class="btn btn-primary" type="submit">Hedef ekle</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="modal">
+    <div class="modal-body">
+      <div class="modal-header">
+        <h2 id="confirm-title">Silinsin mi?</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-close-dialog aria-label="Kapat" title="Kapat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <p id="confirm-text" class="modal-text"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Vazgeç</button>
+        <button id="confirm-delete" class="btn btn-danger-fill" type="button">Sil</button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer>
+    <div class="wrap">
+      <span>Bütçe</span>
+      <a href="https://collectivebucket.com">collectivebucket.com</a>
+    </div>
+  </footer>
+
+  <script src="https://auth.collectivebucket.com/client.js" defer></script>
+  <script src="/assets/config.js" defer></script>
+  <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/budget.js" defer></script>
+  <script src="/assets/ui.js" defer></script>
+  <script src="/assets/nav.js" defer></script>
+  <script src="/assets/goals.js" defer></script>
+</body>
+</html>
