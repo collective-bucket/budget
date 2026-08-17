@@ -160,6 +160,12 @@ a:hover { color: var(--accent-strong); }
   height: 20px;
 }
 
+.btn-tiny {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-strong); color: #fff; }
 .btn-ghost { background: transparent; border-color: var(--border); color: var(--text); }
@@ -350,6 +356,11 @@ main { flex: 1; padding: 40px 0 56px; }
 }
 
 .list-item:last-child { border-bottom: 0; }
+
+.list-main {
+  min-width: 0;
+  flex: 1;
+}
 
 .list-main.is-action {
   cursor: pointer;
