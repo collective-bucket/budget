@@ -13,13 +13,11 @@
   <link rel="stylesheet" href="https://collectivebucket.com/assets/shell.css" />
 </head>
 <body>
-  <header data-cb-shell="header">
-    <nav data-cb-shell-nav>
-      <a href="/">Anasayfa</a>
-      <a href="/incomes">Gelirler</a>
-      <a href="/goals" class="is-active">Hedefler</a>
-    </nav>
-  </header>
+  <header
+    data-cb-shell="header"
+    data-cb-shell-app="Bütçe"
+    data-cb-shell-home="/"
+  ></header>
 
   <main>
     <div class="wrap">
@@ -28,8 +26,13 @@
           <h1>Hedefler</h1>
           <p>Birikim hedeflerini ekle, sabitle ve katkıları gör.</p>
         </div>
-        <div class="hero-toolbar" id="page-actions" hidden>
-          <button id="add-item" class="btn btn-primary" type="button">Hedef ekle</button>
+        <div class="hero-toolbar" id="page-nav">
+          <a href="/" class="btn btn-ghost btn-tiny">Anasayfa</a>
+          <a href="/incomes" class="btn btn-ghost btn-tiny">Gelirler</a>
+          <a href="/goals" class="btn btn-primary btn-tiny">Hedefler</a>
+          <div id="page-actions" hidden>
+            <button id="add-item" class="btn btn-primary" type="button">Hedef ekle</button>
+          </div>
         </div>
       </section>
 
