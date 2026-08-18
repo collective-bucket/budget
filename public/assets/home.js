@@ -3,7 +3,6 @@
 
   var loginPrompt = document.querySelector("#login-prompt");
   var loginLink = document.querySelector("#login-link");
-  var navLinks = document.querySelector(".nav-links");
   var appContent = document.querySelector("#app-content");
   var homeActions = document.querySelector("#home-actions");
   var pageMessage = document.querySelector("#page-message");
@@ -35,7 +34,6 @@
     loginLink.href = window.BudgetStore.loginUrl();
     appContent.hidden = true;
     homeActions.hidden = true;
-    navLinks.hidden = true;
     window.BudgetUI.showMessage(pageMessage, "");
   }
 
@@ -138,7 +136,6 @@
       loginPrompt.hidden = true;
       appContent.hidden = false;
       homeActions.hidden = false;
-      navLinks.hidden = false;
       render();
     } catch (error) {
       showLoggedOut();
