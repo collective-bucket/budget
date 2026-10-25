@@ -28,3 +28,6 @@ npm run serve
 ## Veri
 
 Firestore `budgets/{uid}` belgesi. Okuma ve yazma yalnızca belge sahibi.
+
+Kurallar [collective-bucket/firestore](https://github.com/collective-bucket/firestore)
+reposunda tutulur ve yalnızca oradan deploy edilir; bu repo yalnızca hosting deploy eder.
