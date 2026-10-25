@@ -5,7 +5,7 @@
   "description": "Collective Bucket — gelir, harcama ve birikim hedeflerini takip et.",
   "scripts": {
     "serve": "firebase emulators:start --only hosting",
-    "deploy": "firebase deploy --only hosting:budget,firestore:rules",
+    "deploy": "firebase deploy --only hosting:budget",
     "stamp": "node scripts/stamp-assets.js",
     "check": "node --check public/assets/firestore.js && node --check public/assets/budget.js && node --check public/assets/ui.js && node --check public/assets/nav.js && node --check public/assets/home.js && node --check public/assets/month.js && node --check public/assets/incomes.js && node --check public/assets/goals.js"
   },
