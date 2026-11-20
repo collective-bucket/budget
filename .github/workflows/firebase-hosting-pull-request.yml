@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
   pull-requests: write
 
 jobs:
@@ -12,20 +13,27 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: collective-bucket
+          workload_identity_provider: projects/239510573325/locations/global/workloadIdentityPools/github-actions/providers/github-provider
+          service_account: github-actions-deployer@collective-bucket.iam.gserviceaccount.com
+          token_format: access_token
       - run: npm ci
       - run: npm run check
       - run: npm run stamp
       - id: deploy
         run: |
           npx firebase-tools hosting:channel:deploy "pr-${{ github.event.pull_request.number }}" \
-            --only hosting:budget \
+            --only budget \
             --expires 7d \
-            --token "${{ secrets.FIREBASE_TOKEN }}" \
+            --token "${{ steps.auth.outputs.access_token }}" \
             --non-interactive \
             --json > preview.json
           echo "url=$(node -e 'const r=require("./preview.json"); console.log(r.result.budget.url)')" >> "$GITHUB_OUTPUT"
