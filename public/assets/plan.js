@@ -191,6 +191,7 @@
 
       (input.incomes || []).forEach(function (row) {
         if (row.active === false) return;
+        if (input.skipIncomes && input.skipIncomes[row.id + "|" + ymOf(day)]) return;
         var hit =
           row.schedule === "once"
             ? toDay(row.date) === day

@@ -354,10 +354,14 @@
 
   function planInput(budget, today) {
     var expenses = [];
+    var skipIncomes = {};
     var months = (budget && budget.months) || {};
     Object.keys(months).forEach(function (ym) {
       ((months[ym] && months[ym].expenses) || []).forEach(function (row) {
         expenses.push(row);
+      });
+      ((months[ym] && months[ym].incomes) || []).forEach(function (row) {
+        if (row.active === false && row.sourceId) skipIncomes[row.sourceId + "|" + ym] = true;
       });
     });
     var plan = normalizePlan(budget && budget.plan);
@@ -369,7 +373,8 @@
       incomes: (budget && budget.incomes) || [],
       debts: (budget && budget.debts) || [],
       goals: (budget && budget.goals) || [],
-      expenses: expenses
+      expenses: expenses,
+      skipIncomes: skipIncomes
     };
   }
 
