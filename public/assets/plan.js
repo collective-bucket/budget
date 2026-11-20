@@ -218,7 +218,7 @@
         var target = row.debtId ? debtById(row.debtId) : null;
         if (target) {
           cash -= amount;
-          if (day > target.asOf) pay(target, amount, day);
+          if (day >= target.asOf) pay(target, amount, day);
         } else if (row.goalId) {
           cash -= amount;
           saved += amount;
@@ -226,7 +226,7 @@
         } else {
           spentToday += amount;
           var card = row.method === "card" ? spendCard || cards[0] : null;
-          if (card && day <= card.asOf) return;
+          if (card && day < card.asOf) return;
           spend(amount, day, row.method);
         }
       });
