@@ -210,7 +210,7 @@
         var target = row.debtId ? debtById(row.debtId) : null;
         if (target) {
           cash -= amount;
-          pay(target, amount, day);
+          if (day > target.asOf) pay(target, amount, day);
         } else if (row.goalId) {
           cash -= amount;
           saved += amount;
