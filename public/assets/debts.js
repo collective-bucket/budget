@@ -177,6 +177,9 @@
     try {
       var draft = window.BudgetStore.clone(budget);
       var name = itemName.value.trim();
+      if (itemKind.value === "loan" && itemDueDate.value && itemDueDate.value < itemAsOf.value) {
+        throw new Error("Geri ödeme tarihi, borcun alındığı tarihten önce olamaz.");
+      }
       var fields = {
         name: name,
         kind: itemKind.value,

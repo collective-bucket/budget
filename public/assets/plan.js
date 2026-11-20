@@ -78,7 +78,10 @@
         billed: 0,
         unbilled: row.kind === "card" ? Number(row.balance) || 0 : 0,
         asOf: toDay(row.asOf) === null ? start : toDay(row.asOf),
-        due: toDay(row.dueDate),
+        due:
+          row.kind === "loan" && toDay(row.dueDate) !== null && toDay(row.asOf) !== null
+            ? Math.max(toDay(row.dueDate), toDay(row.asOf))
+            : toDay(row.dueDate),
         statement: null
       };
     });
