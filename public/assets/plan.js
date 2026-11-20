@@ -282,7 +282,7 @@
         if (!revolving && bridge <= EPS) {
           debts
             .filter(function (d) {
-              return d.kind !== "card" && d.balance > EPS && (d.kind === "loan" || d.asOf <= day);
+              return d.kind !== "card" && d.balance > EPS && d.asOf <= day;
             })
             .sort(function (a, b) {
               return (a.src.priority === "high" ? 0 : 1) - (b.src.priority === "high" ? 0 : 1);
