@@ -30,6 +30,8 @@
           <a href="/" class="btn btn-ghost btn-tiny">Anasayfa</a>
           <a href="/incomes" class="btn btn-primary btn-tiny">Gelirler</a>
           <a href="/goals" class="btn btn-ghost btn-tiny">Hedefler</a>
+          <a href="/debts" class="btn btn-ghost btn-tiny">Borçlar</a>
+          <a href="/plan" class="btn btn-ghost btn-tiny">Plan</a>
           <div id="page-actions" hidden>
             <button id="add-item" class="btn btn-primary" type="button">Gelir ekle</button>
           </div>
@@ -63,6 +65,19 @@
         <input id="item-name" type="text" maxlength="80" required placeholder="Maaş" />
         <label for="item-amount">Tutar (₺)</label>
         <input id="item-amount" type="number" min="0" step="0.01" required />
+        <label for="item-schedule">Tekrar</label>
+        <select id="item-schedule">
+          <option value="monthly">Her ay</option>
+          <option value="once">Tek sefer</option>
+        </select>
+        <div id="item-day-wrap">
+          <label for="item-day">Ayın günü</label>
+          <input id="item-day" type="number" min="1" max="31" step="1" value="1" required />
+        </div>
+        <div id="item-date-wrap" hidden>
+          <label for="item-date">Tarih</label>
+          <input id="item-date" type="date" />
+        </div>
         <p id="item-message" class="message" role="status"></p>
       </div>
       <div class="modal-actions">
@@ -97,6 +112,7 @@
   <script src="https://auth.collectivebucket.com/client.js" defer></script>
   <script src="/assets/config.js" defer></script>
   <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/plan.js" defer></script>
   <script src="/assets/budget.js" defer></script>
   <script src="/assets/ui.js" defer></script>
   <script src="/assets/nav.js" defer></script>

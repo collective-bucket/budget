@@ -11,7 +11,7 @@ var version = (
 ).slice(0, 12);
 
 var publicDir = path.join(__dirname, "..", "public");
-var files = ["index.html", "month.html", "incomes.html", "goals.html"];
+var files = ["index.html", "month.html", "incomes.html", "goals.html", "debts.html", "plan.html"];
 
 files.forEach(function (file) {
   var filePath = path.join(publicDir, file);

@@ -25,6 +25,8 @@
         <div class="hero-toolbar" id="home-actions" hidden>
           <a class="btn btn-ghost" href="/incomes">Gelirler</a>
           <a class="btn btn-ghost" href="/goals">Hedefler</a>
+          <a class="btn btn-ghost" href="/debts">Borçlar</a>
+          <a class="btn btn-ghost" href="/plan">Plan</a>
           <button id="add-expense" class="btn btn-primary" type="button">Harcama ekle</button>
         </div>
       </section>
@@ -42,7 +44,7 @@
           <div class="stats">
             <div class="stat"><span>Harcama</span><strong id="stat-expense">0 ₺</strong></div>
             <div class="stat"><span>Kalan</span><strong id="stat-remaining">0 ₺</strong></div>
-            <div class="stat"><span>Günlük limit</span><strong id="stat-daily">0 ₺</strong></div>
+            <a class="stat" href="/plan"><span>Günlük limit</span><strong id="stat-daily">0 ₺</strong><small id="stat-daily-note"></small></a>
           </div>
         </section>
 
@@ -74,6 +76,17 @@
         <input id="expense-name" type="text" maxlength="80" required placeholder="Market" />
         <label for="expense-amount">Tutar (₺)</label>
         <input id="expense-amount" type="number" min="0.01" step="0.01" required />
+        <label for="expense-date">Tarih</label>
+        <input id="expense-date" type="date" required />
+        <label for="expense-method">Ödeme</label>
+        <select id="expense-method">
+          <option value="card">Kredi kartı</option>
+          <option value="cash">Nakit</option>
+        </select>
+        <label for="expense-debt">Borç ödemesi (opsiyonel)</label>
+        <select id="expense-debt">
+          <option value="">Yok</option>
+        </select>
         <label for="expense-goal">Hedefe katkı (opsiyonel)</label>
         <select id="expense-goal">
           <option value="">Yok</option>
@@ -93,6 +106,7 @@
   <script src="https://auth.collectivebucket.com/client.js" defer></script>
   <script src="/assets/config.js" defer></script>
   <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/plan.js" defer></script>
   <script src="/assets/budget.js" defer></script>
   <script src="/assets/ui.js" defer></script>
   <script src="/assets/nav.js" defer></script>

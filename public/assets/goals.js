@@ -14,6 +14,7 @@
   var itemName = document.querySelector("#item-name");
   var itemAmount = document.querySelector("#item-amount");
   var itemPinned = document.querySelector("#item-pinned");
+  var itemDeadline = document.querySelector("#item-deadline");
   var itemContributions = document.querySelector("#item-contributions");
   var itemMessage = document.querySelector("#item-message");
   var itemDelete = document.querySelector("#item-delete");
@@ -98,7 +99,11 @@
           window.BudgetStore.formatMoney(row.targetAmount) +
           '</div><div class="sub">' +
           window.BudgetStore.formatMoney(left) +
-          " kaldı</div></div></li>"
+          " kaldı" +
+          (row.deadline
+            ? " · " + window.BudgetStore.escapeHtml(window.BudgetStore.formatDate(row.deadline))
+            : "") +
+          "</div></div></li>"
         );
       })
       .join("");
@@ -120,6 +125,7 @@
       itemName.value = row.name;
       itemAmount.value = row.targetAmount;
       itemPinned.checked = Boolean(row.pinned);
+      itemDeadline.value = row.deadline || "";
       itemDialogTitle.textContent = "Hedefi düzenle";
       itemSubmit.textContent = "Kaydet";
       itemDelete.hidden = false;
@@ -174,13 +180,15 @@
       var name = itemName.value.trim();
       var amount = Number(itemAmount.value);
       var pinned = itemPinned.checked;
+      var deadline = itemDeadline.value || null;
       if (editingId) {
         draft.goals = (draft.goals || []).map(function (row) {
           if (row.id !== editingId) return row;
           return Object.assign({}, row, {
             name: name,
             targetAmount: amount,
-            pinned: pinned
+            pinned: pinned,
+            deadline: deadline
           });
         });
       } else {
@@ -195,6 +203,7 @@
             name: name,
             targetAmount: amount,
             pinned: pinned,
+            deadline: deadline,
             createdAt: new Date().toISOString()
           }
         ]);

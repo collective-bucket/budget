@@ -431,6 +431,7 @@ label {
 
 input[type="text"],
 input[type="number"],
+input[type="date"],
 select,
 textarea {
   width: 100%;
@@ -443,6 +444,34 @@ textarea {
   background: #fff;
   color: var(--text);
 }
+
+a.stat { display: block; color: inherit; }
+a.stat:hover { border-color: var(--accent); color: inherit; }
+.stat small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+.settings-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0 12px;
+  align-items: end;
+}
+.settings-form .btn { margin-top: 12px; }
+
+.table-wrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th,
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+.table th:first-child,
+.table td:first-child { text-align: left; }
+.table th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.table small { display: block; color: var(--muted); font-size: 11px; }
+.text-danger { color: var(--danger); }
+.text-warning { color: #9a6700; }
 
 .empty { color: var(--muted); }
 .empty.error, .message-error { color: var(--danger); }

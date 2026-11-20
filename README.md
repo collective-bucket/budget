@@ -8,6 +8,10 @@ Collective Bucket altında gelir, harcama ve birikim hedeflerini takip eden uygu
 - Aylık harcamaları not et (aktif/pasif)
 - Birikim hedeflerine harcama olarak katkı
 - Anasayfada pinned hedefler, kalan para ve günlük limit
+- Gelirlere ayın günü veya tek seferlik tarih
+- Borçlar: kredi kartı (kesim/son ödeme günü, asgari oran, faiz + KKDF/BSMV), tek seferlik ve alınan borç
+- Harcamalarda tarih, nakit/kart ve borç ödemesi
+- Plan: hedef son tarihine kadar gün gün simülasyon; günlük sınır, ekstre takvimi, köprü borç uyarısı (`public/assets/plan.js`, test: `node --test test/plan.test.js`)
 
 ## Adresler
 
@@ -16,6 +20,8 @@ Collective Bucket altında gelir, harcama ve birikim hedeflerini takip eden uygu
 - Ay detayı: `/month?ym=YYYY-MM`
 - Gelirler: `/incomes`
 - Hedefler: `/goals`
+- Borçlar: `/debts`
+- Plan: `/plan`
 
 ## Yerel
 

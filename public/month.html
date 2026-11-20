@@ -30,6 +30,8 @@
           <a href="/" class="btn btn-ghost btn-tiny">Anasayfa</a>
           <a href="/incomes" class="btn btn-ghost btn-tiny">Gelirler</a>
           <a href="/goals" class="btn btn-ghost btn-tiny">Hedefler</a>
+          <a href="/debts" class="btn btn-ghost btn-tiny">Borçlar</a>
+          <a href="/plan" class="btn btn-ghost btn-tiny">Plan</a>
           <div id="month-actions" hidden>
             <button id="add-expense" class="btn btn-primary" type="button">Harcama ekle</button>
           </div>
@@ -78,6 +80,17 @@
         <input id="expense-name" type="text" maxlength="80" required placeholder="Market" />
         <label for="expense-amount">Tutar (₺)</label>
         <input id="expense-amount" type="number" min="0.01" step="0.01" required />
+        <label for="expense-date">Tarih</label>
+        <input id="expense-date" type="date" required />
+        <label for="expense-method">Ödeme</label>
+        <select id="expense-method">
+          <option value="card">Kredi kartı</option>
+          <option value="cash">Nakit</option>
+        </select>
+        <label for="expense-debt">Borç ödemesi (opsiyonel)</label>
+        <select id="expense-debt">
+          <option value="">Yok</option>
+        </select>
         <label for="expense-goal">Hedefe katkı (opsiyonel)</label>
         <select id="expense-goal">
           <option value="">Yok</option>
@@ -116,6 +129,7 @@
   <script src="https://auth.collectivebucket.com/client.js" defer></script>
   <script src="/assets/config.js" defer></script>
   <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/plan.js" defer></script>
   <script src="/assets/budget.js" defer></script>
   <script src="/assets/ui.js" defer></script>
   <script src="/assets/nav.js" defer></script>

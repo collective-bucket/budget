@@ -7,7 +7,7 @@
     "serve": "firebase emulators:start --only hosting",
     "deploy": "firebase deploy --only hosting:budget",
     "stamp": "node scripts/stamp-assets.js",
-    "check": "node --check public/assets/firestore.js && node --check public/assets/budget.js && node --check public/assets/ui.js && node --check public/assets/nav.js && node --check public/assets/home.js && node --check public/assets/month.js && node --check public/assets/incomes.js && node --check public/assets/goals.js"
+    "check": "node --check public/assets/firestore.js && node --check public/assets/budget.js && node --check public/assets/ui.js && node --check public/assets/nav.js && node --check public/assets/home.js && node --check public/assets/month.js && node --check public/assets/incomes.js && node --check public/assets/goals.js && node --check public/assets/plan.js && node --check public/assets/debts.js && node --check public/assets/plan-page.js && node --test test/plan.test.js"
   },
   "devDependencies": {
     "firebase-tools": "^15.27.0"

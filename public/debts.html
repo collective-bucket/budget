@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Borçlar | Bütçe</title>
+  <meta name="description" content="Kredi kartı ve diğer borçları yönet." />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="https://collectivebucket.com/assets/shell.css" />
+</head>
+<body>
+  <header
+    data-cb-shell="header"
+    data-cb-shell-app="Bütçe"
+    data-cb-shell-home="/"
+  ></header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <h1>Borçlar</h1>
+          <p>Kredi kartı, tek seferlik borç ve alınan borçları buradan yönet.</p>
+        </div>
+        <div class="hero-toolbar" id="page-nav">
+          <a href="/" class="btn btn-ghost btn-tiny">Anasayfa</a>
+          <a href="/incomes" class="btn btn-ghost btn-tiny">Gelirler</a>
+          <a href="/goals" class="btn btn-ghost btn-tiny">Hedefler</a>
+          <a href="/debts" class="btn btn-primary btn-tiny">Borçlar</a>
+          <a href="/plan" class="btn btn-ghost btn-tiny">Plan</a>
+          <div id="page-actions" hidden>
+            <button id="add-item" class="btn btn-primary" type="button">Borç ekle</button>
+          </div>
+        </div>
+      </section>
+
+      <div id="login-prompt" class="login-action" hidden>
+        <a id="login-link" class="btn btn-primary" href="#">Giriş yap</a>
+      </div>
+
+      <div id="app-content" hidden>
+        <section class="panel">
+          <ul id="item-list" class="list"></ul>
+        </section>
+      </div>
+
+      <p id="page-message" class="message" role="status"></p>
+    </div>
+  </main>
+
+  <dialog id="item-dialog" class="modal">
+    <form id="item-form" class="modal-form" method="dialog">
+      <div class="modal-header">
+        <h2 id="item-dialog-title">Borç ekle</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-close-dialog aria-label="Kapat" title="Kapat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <label for="item-name">Ad</label>
+        <input id="item-name" type="text" maxlength="80" required placeholder="Kredi kartı" />
+        <label for="item-kind">Tür</label>
+        <select id="item-kind">
+          <option value="card">Kredi kartı</option>
+          <option value="once">Tek seferlik borç</option>
+          <option value="loan">Alınan borç (kasaya girer)</option>
+        </select>
+        <label for="item-balance">Bakiye (₺)</label>
+        <input id="item-balance" type="number" min="0" step="0.01" required />
+        <label for="item-as-of">Bakiye tarihi</label>
+        <input id="item-as-of" type="date" required />
+        <label for="item-priority">Öncelik</label>
+        <select id="item-priority">
+          <option value="high">Yüksek</option>
+          <option value="low">Düşük</option>
+        </select>
+        <div id="card-fields">
+          <label for="item-statement-day">Hesap kesim günü</label>
+          <input id="item-statement-day" type="number" min="1" max="31" step="1" value="1" />
+          <label for="item-due-day">Son ödeme günü</label>
+          <input id="item-due-day" type="number" min="1" max="31" step="1" value="10" />
+          <label for="item-min-rate">Asgari ödeme oranı (%)</label>
+          <input id="item-min-rate" type="number" min="0" max="100" step="0.01" value="40" />
+          <label for="item-monthly-rate">Aylık akdi faiz (%)</label>
+          <input id="item-monthly-rate" type="number" min="0" max="100" step="0.01" value="0" />
+          <label for="item-tax-rate">Faize eklenen vergi (KKDF + BSMV, %)</label>
+          <input id="item-tax-rate" type="number" min="0" max="100" step="0.01" value="30" />
+        </div>
+        <div id="once-fields" hidden>
+          <label for="item-due-date">Son ödeme tarihi (opsiyonel)</label>
+          <input id="item-due-date" type="date" />
+        </div>
+        <p id="item-message" class="message" role="status"></p>
+      </div>
+      <div class="modal-actions">
+        <button id="item-delete" class="btn btn-ghost danger" type="button" hidden>Sil</button>
+        <button class="btn btn-ghost" type="button" data-close-dialog>Vazgeç</button>
+        <button id="item-submit" class="btn btn-primary" type="submit">Borç ekle</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog" class="modal">
+    <div class="modal-body">
+      <div class="modal-header">
+        <h2 id="confirm-title">Silinsin mi?</h2>
+        <button class="btn btn-ghost btn-icon" type="button" data-close-dialog aria-label="Kapat" title="Kapat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <div class="modal-content">
+        <p id="confirm-text" class="modal-text"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" data-close-dialog>Vazgeç</button>
+        <button id="confirm-delete" class="btn btn-danger-fill" type="button">Sil</button>
+      </div>
+    </div>
+  </dialog>
+
+  <footer data-cb-shell="footer"></footer>
+
+  <script src="https://collectivebucket.com/assets/shell.js" defer></script>
+  <script src="https://auth.collectivebucket.com/client.js" defer></script>
+  <script src="/assets/config.js" defer></script>
+  <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/plan.js" defer></script>
+  <script src="/assets/budget.js" defer></script>
+  <script src="/assets/ui.js" defer></script>
+  <script src="/assets/nav.js" defer></script>
+  <script src="/assets/debts.js" defer></script>
+</body>
+</html>
