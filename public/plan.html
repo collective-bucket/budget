@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plan | Bütçe</title>
+  <meta name="description" content="Borç ve hedeflere göre günlük harcama sınırı." />
+  <link rel="icon" type="image/svg+xml" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="stylesheet" href="https://collectivebucket.com/assets/shell.css" />
+</head>
+<body>
+  <header
+    data-cb-shell="header"
+    data-cb-shell-app="Bütçe"
+    data-cb-shell-home="/"
+  ></header>
+
+  <main>
+    <div class="wrap">
+      <section class="hero">
+        <div>
+          <h1>Plan</h1>
+          <p>Gelir, borç ve hedeflere göre bugünden hedef tarihine günlük sınır.</p>
+        </div>
+        <div class="hero-toolbar" id="page-nav">
+          <a href="/" class="btn btn-ghost btn-tiny">Anasayfa</a>
+          <a href="/incomes" class="btn btn-ghost btn-tiny">Gelirler</a>
+          <a href="/goals" class="btn btn-ghost btn-tiny">Hedefler</a>
+          <a href="/debts" class="btn btn-ghost btn-tiny">Borçlar</a>
+          <a href="/plan" class="btn btn-primary btn-tiny">Plan</a>
+        </div>
+      </section>
+
+      <div id="login-prompt" class="login-action" hidden>
+        <a id="login-link" class="btn btn-primary" href="#">Giriş yap</a>
+      </div>
+
+      <div id="app-content" hidden>
+        <section class="panel">
+          <div class="stats">
+            <div class="stat"><span>Günlük sınır</span><strong id="stat-daily">0 ₺</strong></div>
+            <div class="stat"><span>Toplam faiz</span><strong id="stat-interest">0 ₺</strong></div>
+            <div class="stat"><span id="stat-free-label">Hedef tarihinde serbest</span><strong id="stat-free">0 ₺</strong></div>
+          </div>
+          <ul id="plan-alerts" class="list"></ul>
+        </section>
+
+        <section class="panel">
+          <h2>Başlangıç</h2>
+          <form id="settings-form" class="settings-form">
+            <div>
+              <label for="plan-start-date">Kasa tarihi</label>
+              <input id="plan-start-date" type="date" required />
+            </div>
+            <div>
+              <label for="plan-start-cash">O günkü kasa (₺)</label>
+              <input id="plan-start-cash" type="number" step="0.01" required />
+            </div>
+            <div>
+              <label for="plan-spend-method">Günlük harcama</label>
+              <select id="plan-spend-method">
+                <option value="card">Kredi kartıyla</option>
+                <option value="cash">Nakitle</option>
+              </select>
+            </div>
+            <button id="settings-submit" class="btn btn-primary" type="submit">Kaydet</button>
+          </form>
+          <p class="meta">Kasa tarihinden sonraki gelirler, harcamalar ve borç ödemeleri kayıtlardan hesaplanır.</p>
+        </section>
+
+        <section class="panel">
+          <h2>Kart ekstreleri</h2>
+          <div class="table-wrap"><table id="statement-table" class="table"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>Aylar</h2>
+          <div class="table-wrap"><table id="month-table" class="table"></table></div>
+        </section>
+      </div>
+
+      <p id="page-message" class="message" role="status"></p>
+    </div>
+  </main>
+
+  <footer data-cb-shell="footer"></footer>
+
+  <script src="https://collectivebucket.com/assets/shell.js" defer></script>
+  <script src="https://auth.collectivebucket.com/client.js" defer></script>
+  <script src="/assets/config.js" defer></script>
+  <script src="/assets/firestore.js" defer></script>
+  <script src="/assets/plan.js" defer></script>
+  <script src="/assets/budget.js" defer></script>
+  <script src="/assets/ui.js" defer></script>
+  <script src="/assets/nav.js" defer></script>
+  <script src="/assets/plan-page.js" defer></script>
+</body>
+</html>

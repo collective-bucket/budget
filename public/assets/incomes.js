@@ -13,6 +13,11 @@
   var itemDialogTitle = document.querySelector("#item-dialog-title");
   var itemName = document.querySelector("#item-name");
   var itemAmount = document.querySelector("#item-amount");
+  var itemSchedule = document.querySelector("#item-schedule");
+  var itemDay = document.querySelector("#item-day");
+  var itemDate = document.querySelector("#item-date");
+  var itemDayWrap = document.querySelector("#item-day-wrap");
+  var itemDateWrap = document.querySelector("#item-date-wrap");
   var itemMessage = document.querySelector("#item-message");
   var itemDelete = document.querySelector("#item-delete");
   var itemSubmit = document.querySelector("#item-submit");
@@ -38,6 +43,19 @@
     pageActions.hidden = true;
   }
 
+  function scheduleLabel(row) {
+    if (row.schedule === "once") return window.BudgetStore.formatDate(row.date);
+    return "Her ayın " + row.day + ". günü";
+  }
+
+  function syncSchedule() {
+    var once = itemSchedule.value === "once";
+    itemDayWrap.hidden = once;
+    itemDateWrap.hidden = !once;
+    itemDay.required = !once;
+    itemDate.required = once;
+  }
+
   function render() {
     var incomes = budget.incomes || [];
     if (!incomes.length) {
@@ -53,6 +71,8 @@
           window.BudgetStore.escapeHtml(row.name) +
           " · " +
           window.BudgetStore.formatMoney(row.amount) +
+          '</div><div class="sub">' +
+          window.BudgetStore.escapeHtml(scheduleLabel(row)) +
           "</div></div></li>"
         );
       })
@@ -65,6 +85,7 @@
     itemDialogTitle.textContent = "Gelir ekle";
     itemSubmit.textContent = "Gelir ekle";
     itemDelete.hidden = true;
+    syncSchedule();
     window.BudgetUI.showMessage(itemMessage, "");
   }
 
@@ -73,6 +94,10 @@
       editingId = row.id;
       itemName.value = row.name;
       itemAmount.value = row.amount;
+      itemSchedule.value = row.schedule || "monthly";
+      itemDay.value = row.day || 1;
+      itemDate.value = row.date || "";
+      syncSchedule();
       itemDialogTitle.textContent = "Geliri düzenle";
       itemSubmit.textContent = "Kaydet";
       itemDelete.hidden = false;
@@ -125,10 +150,15 @@
       var draft = window.BudgetStore.clone(budget);
       var name = itemName.value.trim();
       var amount = Number(itemAmount.value);
+      var schedule = {
+        schedule: itemSchedule.value,
+        day: Number(itemDay.value) || 1,
+        date: itemSchedule.value === "once" ? itemDate.value : null
+      };
       if (editingId) {
         draft.incomes = (draft.incomes || []).map(function (row) {
           if (row.id !== editingId) return row;
-          return Object.assign({}, row, { name: name, amount: amount });
+          return Object.assign({}, row, { name: name, amount: amount }, schedule);
         });
       } else {
         if ((draft.incomes || []).length >= window.BudgetStore.MAX_INCOMES) {
@@ -137,12 +167,15 @@
           );
         }
         draft.incomes = (draft.incomes || []).concat([
-          {
-            id: window.BudgetStore.createId(),
-            name: name,
-            amount: amount,
-            active: true
-          }
+          Object.assign(
+            {
+              id: window.BudgetStore.createId(),
+              name: name,
+              amount: amount,
+              active: true
+            },
+            schedule
+          )
         ]);
       }
       await persist(draft);
@@ -217,6 +250,7 @@
     openById(item.getAttribute("data-open-item"));
   });
 
+  itemSchedule.addEventListener("change", syncSchedule);
   itemDialog.addEventListener("close", resetForm);
   confirmDialog.addEventListener("close", function () {
     pendingDelete = null;

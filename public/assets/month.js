@@ -81,9 +81,10 @@
     statRemaining.textContent = window.BudgetStore.formatMoney(totals.remaining);
     if (ym === currentYm) {
       dailyWrap.hidden = false;
-      dailyWrap.textContent =
-        "Günlük limit: " +
-        window.BudgetStore.formatMoney(window.BudgetStore.dailyLimit(month, ym));
+      dailyWrap.innerHTML =
+        'Günlük limit: <a href="/plan">' +
+        window.BudgetStore.formatMoney(window.BudgetStore.buildPlan(budget).daily) +
+        "</a>";
     } else {
       dailyWrap.hidden = true;
     }
@@ -117,6 +118,7 @@
       expenseList.innerHTML = expenses
         .map(function (row) {
           var goal = row.goalId ? window.BudgetStore.goalName(budget, row.goalId) : "";
+          var debt = row.debtId ? window.BudgetStore.debtName(budget, row.debtId) : "";
           return (
             '<li class="list-item' +
             (row.active ? "" : " is-inactive") +
@@ -137,6 +139,14 @@
                 window.BudgetStore.escapeHtml(goal) +
                 "</span>"
               : "") +
+            (debt
+              ? '<span class="badge">Borç: ' +
+                window.BudgetStore.escapeHtml(debt) +
+                "</span>"
+              : "") +
+            (row.method === "card" ? '<span class="badge">Kart</span>' : "") +
+            '</div><div class="sub">' +
+            window.BudgetStore.escapeHtml(window.BudgetStore.formatDate(row.date)) +
             "</div></div></li>"
           );
         })
@@ -160,8 +170,13 @@
     fillGoalOptions("");
   }
 
+  function defaultDate() {
+    return ym === currentYm ? window.BudgetStore.todayIso() : ym + "-01";
+  }
+
   function openExpense(expense) {
     fillGoalOptions(expense ? expense.goalId : "");
+    window.BudgetUI.expenseFields(expenseForm, budget, expense, defaultDate());
     if (expense) {
       editingId = expense.id;
       expenseName.value = expense.name;
@@ -213,14 +228,16 @@
       var draft = window.BudgetStore.clone(budget);
       window.BudgetStore.ensureMonth(draft, ym);
       var expenses = draft.months[ym].expenses || [];
-      var payload = {
-        id: editingId || window.BudgetStore.createId(),
-        name: expenseName.value.trim(),
-        amount: Number(expenseAmount.value),
-        active: true,
-        goalId: expenseGoal.value || null,
-        createdAt: new Date().toISOString()
-      };
+      var payload = Object.assign(
+        {
+          id: editingId || window.BudgetStore.createId(),
+          name: expenseName.value.trim(),
+          amount: Number(expenseAmount.value),
+          active: true,
+          createdAt: new Date().toISOString()
+        },
+        window.BudgetUI.readExpenseFields(expenseForm)
+      );
       if (editingId) {
         var existing = expenses.find(function (row) {
           return row.id === editingId;

@@ -4,6 +4,8 @@
   var MAX_INCOMES = 40;
   var MAX_GOALS = 40;
   var MAX_EXPENSES = 200;
+  var MAX_DEBTS = 40;
+  var DEBT_KINDS = ["card", "once", "loan"];
   var MONTH_NAMES = [
     "Ocak",
     "Şubat",
@@ -46,6 +48,22 @@
   function formatMoney(amount) {
     var value = Math.round(Number(amount) || 0);
     return value.toLocaleString("tr-TR") + " ₺";
+  }
+
+  function isoDate(value) {
+    var text = String(value || "").slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(text) ? text : null;
+  }
+
+  function todayIso(date) {
+    var d = date || new Date();
+    return monthKey(d) + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function clampNumber(value, min, max, fallback) {
+    var n = Number(value);
+    if (!isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, n));
   }
 
   function monthKey(date) {
@@ -91,6 +109,8 @@
       ownerUid: uid,
       incomes: [],
       goals: [],
+      debts: [],
+      plan: normalizePlan(null),
       months: {},
       createdAt: nowIso(),
       updatedAt: nowIso()
@@ -105,11 +125,15 @@
         var name = String((row && row.name) || "").trim().slice(0, 80);
         var amount = roundMoney(row && row.amount);
         if (!id || !name || !(amount >= 0)) return null;
+        var once = row && row.schedule === "once" && isoDate(row.date);
         return {
           id: id,
           name: name,
           amount: amount,
-          active: Boolean(row && row.active !== false)
+          active: Boolean(row && row.active !== false),
+          schedule: once ? "once" : "monthly",
+          day: Math.round(clampNumber(row && row.day, 1, 31, 1)),
+          date: once ? isoDate(row.date) : null
         };
       })
       .filter(Boolean)
@@ -129,11 +153,51 @@
           name: name,
           targetAmount: targetAmount,
           pinned: Boolean(row && row.pinned),
+          deadline: isoDate(row && row.deadline),
           createdAt: String((row && row.createdAt) || nowIso())
         };
       })
       .filter(Boolean)
       .slice(0, MAX_GOALS);
+  }
+
+  function normalizeDebts(list) {
+    if (!Array.isArray(list)) return [];
+    return list
+      .map(function (row) {
+        var id = String((row && row.id) || "").trim().slice(0, 40);
+        var name = String((row && row.name) || "").trim().slice(0, 80);
+        var balance = roundMoney(row && row.balance);
+        var kind = DEBT_KINDS.indexOf(row && row.kind) >= 0 ? row.kind : "once";
+        if (!id || !name || !(balance >= 0)) return null;
+        var debt = {
+          id: id,
+          name: name,
+          kind: kind,
+          balance: balance,
+          asOf: isoDate(row.asOf) || todayIso(),
+          priority: row.priority === "low" ? "low" : "high",
+          dueDate: kind === "card" ? null : isoDate(row.dueDate)
+        };
+        if (kind === "card") {
+          debt.statementDay = Math.round(clampNumber(row.statementDay, 1, 31, 1));
+          debt.dueDay = Math.round(clampNumber(row.dueDay, 1, 31, 10));
+          debt.minRate = clampNumber(row.minRate, 0, 1, 0.4);
+          debt.monthlyRate = clampNumber(row.monthlyRate, 0, 1, 0);
+          debt.taxRate = clampNumber(row.taxRate, 0, 1, 0.3);
+        }
+        return debt;
+      })
+      .filter(Boolean)
+      .slice(0, MAX_DEBTS);
+  }
+
+  function normalizePlan(plan) {
+    return {
+      startDate: isoDate(plan && plan.startDate) || todayIso(),
+      startCash: roundMoney(plan && plan.startCash),
+      spendMethod: plan && plan.spendMethod === "cash" ? "cash" : "card"
+    };
   }
 
   function normalizeMonthIncomes(list) {
@@ -155,7 +219,7 @@
       .slice(0, MAX_INCOMES);
   }
 
-  function normalizeExpenses(list, goalIds) {
+  function normalizeExpenses(list, goalIds, debtIds) {
     if (!Array.isArray(list)) return [];
     return list
       .map(function (row) {
@@ -164,14 +228,20 @@
         var amount = roundMoney(row && row.amount);
         var goalId = String((row && row.goalId) || "").trim();
         if (!id || !name || !(amount > 0)) return null;
+        var debtId = String((row && row.debtId) || "").trim();
         if (goalId && !goalIds[goalId]) goalId = "";
+        if (debtId && !debtIds[debtId]) debtId = "";
+        var createdAt = String((row && row.createdAt) || nowIso());
         return {
           id: id,
           name: name,
           amount: amount,
           active: Boolean(row && row.active !== false),
-          goalId: goalId || null,
-          createdAt: String((row && row.createdAt) || nowIso())
+          goalId: debtId ? null : goalId || null,
+          debtId: debtId || null,
+          method: row && row.method === "card" && !debtId ? "card" : "cash",
+          date: isoDate(row && row.date) || isoDate(createdAt) || todayIso(),
+          createdAt: createdAt
         };
       })
       .filter(Boolean)
@@ -184,6 +254,11 @@
     goals.forEach(function (goal) {
       goalIds[goal.id] = true;
     });
+    var debts = normalizeDebts(input && input.debts);
+    var debtIds = {};
+    debts.forEach(function (debt) {
+      debtIds[debt.id] = true;
+    });
 
     var monthsIn = (input && input.months) || {};
     var months = {};
@@ -192,7 +267,7 @@
       var month = monthsIn[ym] || {};
       months[ym] = {
         incomes: normalizeMonthIncomes(month.incomes),
-        expenses: normalizeExpenses(month.expenses, goalIds)
+        expenses: normalizeExpenses(month.expenses, goalIds, debtIds)
       };
     });
 
@@ -200,21 +275,27 @@
       ownerUid: existing && existing.ownerUid ? existing.ownerUid : uid,
       incomes: normalizeIncomes(input && input.incomes),
       goals: goals,
+      debts: debts,
+      plan: normalizePlan(input && input.plan),
       months: months,
       createdAt: existing && existing.createdAt ? existing.createdAt : nowIso(),
       updatedAt: nowIso()
     };
   }
 
-  function snapshotIncomes(incomes) {
-    return normalizeIncomes(incomes).map(function (row) {
-      return {
-        sourceId: row.id,
-        name: row.name,
-        amount: row.amount,
-        active: row.active
-      };
-    });
+  function snapshotIncomes(incomes, ym) {
+    return normalizeIncomes(incomes)
+      .filter(function (row) {
+        return row.schedule !== "once" || row.date.slice(0, 7) === ym;
+      })
+      .map(function (row) {
+        return {
+          sourceId: row.id,
+          name: row.name,
+          amount: row.amount,
+          active: row.active
+        };
+      });
   }
 
   function ensureMonth(budget, ym) {
@@ -222,7 +303,7 @@
     if (!budget.months) budget.months = {};
     if (!budget.months[key]) {
       budget.months[key] = {
-        incomes: snapshotIncomes(budget.incomes),
+        incomes: snapshotIncomes(budget.incomes, key),
         expenses: []
       };
       return true;
@@ -269,6 +350,50 @@
       });
     });
     return roundMoney(total);
+  }
+
+  function planInput(budget, today) {
+    var expenses = [];
+    var skipIncomes = {};
+    var months = (budget && budget.months) || {};
+    Object.keys(months).forEach(function (ym) {
+      ((months[ym] && months[ym].expenses) || []).forEach(function (row) {
+        expenses.push(row);
+      });
+      ((months[ym] && months[ym].incomes) || []).forEach(function (row) {
+        if (row.active === false && row.sourceId) skipIncomes[row.sourceId + "|" + ym] = true;
+      });
+    });
+    var plan = normalizePlan(budget && budget.plan);
+    return {
+      today: today || todayIso(),
+      startDate: plan.startDate,
+      startCash: plan.startCash,
+      spendMethod: plan.spendMethod,
+      incomes: (budget && budget.incomes) || [],
+      debts: (budget && budget.debts) || [],
+      goals: (budget && budget.goals) || [],
+      expenses: expenses,
+      skipIncomes: skipIncomes
+    };
+  }
+
+  function buildPlan(budget, today) {
+    return window.BudgetPlan.buildPlan(planInput(budget, today));
+  }
+
+  function formatDate(iso) {
+    var text = isoDate(iso);
+    if (!text) return "";
+    var parts = text.split("-");
+    return Number(parts[2]) + " " + MONTH_NAMES[Number(parts[1]) - 1] + " " + parts[0];
+  }
+
+  function debtName(budget, debtId) {
+    var debt = ((budget && budget.debts) || []).find(function (row) {
+      return row.id === debtId;
+    });
+    return debt ? debt.name : "";
   }
 
   function goalContributions(budget, goalId) {
@@ -405,6 +530,12 @@
     MAX_INCOMES: MAX_INCOMES,
     MAX_GOALS: MAX_GOALS,
     MAX_EXPENSES: MAX_EXPENSES,
+    MAX_DEBTS: MAX_DEBTS,
+    todayIso: todayIso,
+    formatDate: formatDate,
+    debtName: debtName,
+    planInput: planInput,
+    buildPlan: buildPlan,
     createId: createId,
     clone: clone,
     escapeHtml: escapeHtml,

@@ -11,6 +11,7 @@
   var statExpense = document.querySelector("#stat-expense");
   var statRemaining = document.querySelector("#stat-remaining");
   var statDaily = document.querySelector("#stat-daily");
+  var statDailyNote = document.querySelector("#stat-daily-note");
   var goalList = document.querySelector("#goal-list");
   var pastMonths = document.querySelector("#past-months");
   var addExpense = document.querySelector("#add-expense");
@@ -61,9 +62,13 @@
     monthLink.href = "/month?ym=" + encodeURIComponent(currentYm);
     statExpense.textContent = window.BudgetStore.formatMoney(totals.expense);
     statRemaining.textContent = window.BudgetStore.formatMoney(totals.remaining);
-    statDaily.textContent = window.BudgetStore.formatMoney(
-      window.BudgetStore.dailyLimit(month, currentYm)
-    );
+    var plan = window.BudgetStore.buildPlan(budget);
+    statDaily.textContent = window.BudgetStore.formatMoney(plan.daily);
+    statDailyNote.textContent = plan.feasible
+      ? plan.bridges.length
+        ? "Köprü borç gerekiyor"
+        : "Plana göre"
+      : "Hedef tutmuyor";
 
     var pinned = (budget.goals || []).filter(function (goal) {
       return goal.pinned;
@@ -146,6 +151,7 @@
   addExpense.addEventListener("click", function () {
     fillGoalOptions();
     expenseForm.reset();
+    window.BudgetUI.expenseFields(expenseForm, budget, null);
     window.BudgetUI.showMessage(expenseMessage, "");
     window.BudgetUI.openDialog(expenseDialog);
     expenseName.focus();
@@ -165,14 +171,18 @@
           "En fazla " + window.BudgetStore.MAX_EXPENSES + " harcama eklenebilir."
         );
       }
-      expenses.push({
-        id: window.BudgetStore.createId(),
-        name: expenseName.value.trim(),
-        amount: Number(expenseAmount.value),
-        active: true,
-        goalId: expenseGoal.value || null,
-        createdAt: new Date().toISOString()
-      });
+      expenses.push(
+        Object.assign(
+          {
+            id: window.BudgetStore.createId(),
+            name: expenseName.value.trim(),
+            amount: Number(expenseAmount.value),
+            active: true,
+            createdAt: new Date().toISOString()
+          },
+          window.BudgetUI.readExpenseFields(expenseForm)
+        )
+      );
       draft.months[currentYm].expenses = expenses;
       budget = await window.BudgetStore.saveBudget(draft, session);
       window.BudgetUI.closeDialog(expenseDialog);
