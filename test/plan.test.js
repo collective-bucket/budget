@@ -119,3 +119,21 @@ test("loan received after start adds cash and is repaid by its due date", functi
   assert.strictEqual(r.bridges.length, 0);
   assert.ok(r.paidOff.kopru <= "2026-12-06");
 });
+
+test("loan due before receipt is not repaid before it arrives", function () {
+  var s = scenario({
+    debts: scenario().debts.concat([
+      { id: "erken", name: "Erken", kind: "loan", balance: 5000, asOf: "2027-04-15", dueDate: "2027-03-20", priority: "high" }
+    ])
+  });
+  var r = plan.buildPlan(s);
+  assert.ok(r.paidOff.erken >= "2027-04-15");
+});
+
+test("statement due after the horizon keeps its unpaid balance", function () {
+  var r = plan.buildPlan(scenario());
+  var last = r.statements[r.statements.length - 1];
+  assert.ok(last.dueDate > r.end.date);
+  assert.strictEqual(last.paid, 0);
+  assert.strictEqual(last.left, last.amount);
+});
