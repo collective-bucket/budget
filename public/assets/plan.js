@@ -312,6 +312,10 @@
       });
     }
 
+    cards.forEach(function (d) {
+      if (d.statement) d.statement.left = round(d.billed);
+    });
+
     var endNet = cash + saved - owedTotal();
     var ok = negative === null && checks.every(function (c) {
       return c.gap <= 1;
