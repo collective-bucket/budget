@@ -225,6 +225,21 @@
       if (future) spend(Math.max(0, (day === today ? daily - spentToday : daily)), day, spendCard ? "card" : "cash");
 
       cards.forEach(function (d) {
+        var s = d.statement;
+        if (!s || toDay(s.dueDate) !== day) return;
+        if (future) {
+          var minLeft = Math.max(0, s.minimum - s.paid);
+          ensureCash(minLeft, day, d.src.name + " asgari ödeme");
+          var amount = Math.min(Math.max(cash, 0), d.billed);
+          cash -= pay(d, amount, day);
+        } else if (s.paid + EPS < s.minimum) {
+          warnings.push(toIso(day) + ": " + d.src.name + " asgari ödemesi eksik (" + round(s.minimum - s.paid) + ")");
+        }
+        s.left = round(d.billed);
+        d.statement = null;
+      });
+
+      cards.forEach(function (d) {
         if (!isMonthDay(day, Number(d.src.statementDay) || 1)) return;
         var interest = 0;
         if (d.billed > EPS) {
@@ -249,21 +264,6 @@
           left: 0
         };
         statements.push(d.statement);
-      });
-
-      cards.forEach(function (d) {
-        var s = d.statement;
-        if (!s || toDay(s.dueDate) !== day) return;
-        if (future) {
-          var minLeft = Math.max(0, s.minimum - s.paid);
-          ensureCash(minLeft, day, d.src.name + " asgari ödeme");
-          var amount = Math.min(Math.max(cash, 0), d.billed);
-          cash -= pay(d, amount, day);
-        } else if (s.paid + EPS < s.minimum) {
-          warnings.push(toIso(day) + ": " + d.src.name + " asgari ödemesi eksik (" + round(s.minimum - s.paid) + ")");
-        }
-        s.left = round(d.billed);
-        d.statement = null;
       });
 
       if (future) {
