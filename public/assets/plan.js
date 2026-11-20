@@ -95,7 +95,14 @@
     var byDay = {};
     (input.expenses || []).forEach(function (row) {
       var day = toDay(row.date);
-      if (day === null || day < start || row.active === false) return;
+      if (day === null || row.active === false) return;
+      if (day < start) {
+        if (row.goalId && !row.debtId) {
+          saved += Number(row.amount) || 0;
+          goalSaved[row.goalId] = (goalSaved[row.goalId] || 0) + (Number(row.amount) || 0);
+        }
+        return;
+      }
       (byDay[day] = byDay[day] || []).push(row);
     });
 
